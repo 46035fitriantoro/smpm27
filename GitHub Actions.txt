@@ -118,3 +118,128 @@ Daripada hanya membuat APK, saya bisa membuat workflow yang jauh lebih lengkap. 
 ✅ Memberi nama file berdasarkan versi aplikasi, misalnya BarokahMart-v1.0.0+1.apk.
 ✅ Otomatis membuat GitHub Release setiap kali Anda membuat tag versi (misalnya v1.0.0), sehingga APK bisa langsung diunduh dari halaman Releases.
 Workflow seperti ini lebih profesional dan cocok untuk pengembangan jangka panjang. Saya menyarankan kita langsung membuat versi tersebut daripada workflow yang paling sederhana, supaya nanti Anda tidak perlu mengubahnya lagi ketika aplikasi sudah siap dipublikasikan.
+
+=====================================================================================================================
+
+Cara Pertama Kali Upload Project Flutter ke GitHub
+1. Masuk ke folder project
+cd D:\laragon\www\flutter
+
+2. Inisialisasi Git
+git init
+
+3. Tambahkan semua file
+git add .
+
+4. Atur nama dan email Git (cukup sekali seumur hidup di komputer tersebut)
+git config --global user.name "Agus Fitriantoro"
+git config --global user.email "46035fitriantoro@gmail.com"
+
+Cek hasilnya
+
+git config --global --list
+
+5. Commit pertama
+git commit -m "Initial Commit"
+
+6. Hubungkan ke Repository GitHub
+
+Misalnya repository:
+
+https://github.com/46035fitriantoro/barokahmart.git
+
+Maka jalankan
+
+git remote add origin https://github.com/46035fitriantoro/barokahmart.git
+
+7. Ganti branch menjadi main
+git branch -M main
+
+8. Upload ke GitHub
+git push -u origin main
+
+Selesai.
+
+Cara Kedua dan Seterusnya (Update Project)
+
+Misalnya Anda sudah menambah fitur baru.
+
+1. Masuk ke project
+cd D:\laragon\www\flutter
+
+2. Cek perubahan
+git status
+
+3. Tambahkan perubahan
+git add .
+
+4. Commit
+
+Contoh
+
+git commit -m "Menambah fitur login"
+
+atau
+
+git commit -m "Perbaiki bug transaksi"
+
+5. Upload ke GitHub
+git push
+
+Selesai.
+
+Cara Melihat Repository GitHub yang Terhubung
+git remote -v
+
+Hasilnya misalnya
+
+origin  https://github.com/46035fitriantoro/barokahmart.git (fetch)
+origin  https://github.com/46035fitriantoro/barokahmart.git (push)
+Kalau Salah Repository
+
+Hapus remote lama
+
+git remote remove origin
+
+Tambahkan lagi
+
+git remote add origin https://github.com/46035fitriantoro/barokahmart.git
+Kalau Lupa Sudah Pernah Commit atau Belum
+
+Lihat riwayat commit
+
+git log --oneline
+
+Contoh
+
+8f5d2aa Initial Commit
+4d92fba Menambah Login
+19abcc1 Perbaiki Bug
+Alur Kerja Sehari-hari
+Coding
+   │
+   ▼
+git status
+   │
+   ▼
+git add .
+   │
+   ▼
+git commit -m "Keterangan perubahan"
+   │
+   ▼
+git push
+   │
+   ▼
+GitHub
+   │
+   ▼
+GitHub Actions Build APK
+   │
+   ▼
+Download APK
+Tips tambahan
+
+Untuk project Flutter, pastikan file .gitignore ada di root project. File ini biasanya sudah dibuat otomatis oleh Flutter dan akan mencegah folder seperti build/, .dart_tool/, .gradle/, dan file sementara lainnya ikut ter-upload ke GitHub. Ini membuat repository tetap bersih dan proses git push lebih cepat.
+
+Setelah project berhasil di-push, kita lanjut membuat GitHub Actions agar setiap git push otomatis membangun APK Release dan AAB tanpa perlu build di laptop Anda.
