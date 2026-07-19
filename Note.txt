@@ -1,0 +1,54 @@
+Environment
+
+ANDROID_HOME
+C:\Android\sdk
+
+ANDROID_NDK_HOME
+C:\Android\sdk\ndk
+
+JAVA_HOME
+C:\Program Files\Java\jdk-21.0.10
+
+Path
+C:\flutter\bin
+%JAVA_HOME%\bin
+%ANDROID_HOME%\cmdline-tools\latest\bin
+%ANDROID_HOME%\platform-tools
+
+Hapus Path System Jika Ada
+C:\Program Files\Common Files\Oracle\Java\javapath
+
+
+
+Berikut daftar yang harus diinstall di PC baru:
+
+1. Flutter SDK — flutter 3.44.6 stable
+
+Download: https://flutter.dev
+Extract ke C:\flutter, lalu tambahkan C:\flutter\bin ke PATH
+2. Android Studio (untuk Android SDK & tools)
+
+Android SDK Platform: 34, 35, 36
+Android Build Tools: 35.0.0, 36.1.0, 37.0.0
+Android SDK Location: C:\Users\<user>\AppData\Local\Android\sdk
+3. Java (JDK) — JDK 21
+
+Atur JAVA_HOME dan tambahkan bin/ ke PATH
+4. Setelah Flutter terinstall, jalankan:
+
+flutter doctor
+Pastikan semua checklist hijau.
+
+5. Clone project & build:
+
+git clone <repo>
+cd <project>
+flutter pub get
+flutter build apk --release
+Catatan penting: Gradle versi 8.14, Android Gradle Plugin 8.11.1, Kotlin 2.2.20, dan Java 17 target — semua sudah diatur di file project (gradle-wrapper.properties, settings.gradle.kts, build.gradle.kts), jadi tidak perlu install manual. Flutter akan download Gradle wrapper otomatis saat pertama build.
+
+
+
+flutter clean
+flutter pub get
+flutter build apk --release --no-daemon

@@ -1,0 +1,118 @@
+Login ke GitHub. https://github.com
+46035fitriantoro@gmail.com
+Klik New Repository.
+Misalnya beri nama:
+barokahmart
+Pilih Private (atau Public jika ingin).
+Jangan centang README.
+Klik Create Repository.
+
+Install Git
+
+Upload Project
+Masuk ke project:
+cd D:\laragon\www\flutter
+Lalu:
+git init
+git add .
+git commit -m "First Commit"
+Tambahkan repository GitHub
+Misalnya
+git remote add origin https://github.com/46035fitriantoro/barokahmart.git
+Lalu
+git branch -M main
+git push -u origin main
+
+Buat Folder Workflow
+Di project buat folder
+.github
+di dalamnya
+workflows
+Sehingga menjadi
+.github
+└── workflows
+
+Buat File
+Misalnya
+android-release.yml
+Isi file tersebut:
+name: Build Android Release
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.44.6
+          channel: stable
+          cache: true
+      - name: Flutter Version
+        run: flutter --version
+      - name: Get Packages
+        run: flutter pub get
+      - name: Build APK
+        run: flutter build apk --release
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+Commit lagi
+git add .
+git commit -m "Add GitHub Actions"
+git push
+
+Buka GitHub
+Masuk ke
+Actions
+Nanti muncul
+Build Android Release
+Klik
+Run workflow
+Server GitHub akan:
+✅ Download Flutter
+✅ Download Android SDK
+✅ Download dependency
+✅ Build Release
+
+Kalau selesai akan muncul
+Artifacts
+app-release
+Klik
+Download
+Maka APK Release akan terdownload.
+Keuntungan
+Laptop Anda hanya menjalankan
+VS Code
+dan
+git push
+Tidak perlu lagi:
+Build Gradle
+Compile R8
+DEX
+Shrink Resources
+Semua dilakukan server GitHub.
+
+Saya punya saran yang lebih bagus lagi
+Daripada hanya membuat APK, saya bisa membuat workflow yang jauh lebih lengkap. Misalnya setiap git push, GitHub akan:
+✅ Build APK Debug.
+✅ Build APK Release.
+✅ Build Android App Bundle (.aab) untuk Google Play.
+✅ Menyimpan semua hasil sebagai artifact.
+✅ Memberi nama file berdasarkan versi aplikasi, misalnya BarokahMart-v1.0.0+1.apk.
+✅ Otomatis membuat GitHub Release setiap kali Anda membuat tag versi (misalnya v1.0.0), sehingga APK bisa langsung diunduh dari halaman Releases.
+Workflow seperti ini lebih profesional dan cocok untuk pengembangan jangka panjang. Saya menyarankan kita langsung membuat versi tersebut daripada workflow yang paling sederhana, supaya nanti Anda tidak perlu mengubahnya lagi ketika aplikasi sudah siap dipublikasikan.
