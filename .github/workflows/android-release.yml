@@ -53,14 +53,24 @@ jobs:
       - name: Build AppBundle
         run: flutter build appbundle --release
 
+      - name: Rename APK
+        shell: bash
+        run: |
+          cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/Barokah-Mart.apk
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: BarokahMart-APK
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: build/app/outputs/flutter-apk/Barokah-Mart.apk
+
+      - name: Rename AAB
+        shell: bash
+        run: |
+          cp build/app/outputs/bundle/release/app-release.aab build/app/outputs/bundle/release/Barokah-Mart.aab
 
       - name: Upload AAB
         uses: actions/upload-artifact@v4
         with:
           name: BarokahMart-AAB
-          path: build/app/outputs/bundle/release/app-release.aab
+          path: build/app/outputs/bundle/release/Barokah-Mart.aab
