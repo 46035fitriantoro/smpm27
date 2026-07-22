@@ -78,6 +78,10 @@ git add .
 git commit -m "Add GitHub Actions"
 git push
 
+git add .
+git commit -m "Increase Gradle memory for GitHub Actions"
+git push
+
 Buka GitHub
 Masuk ke
 Actions
@@ -118,6 +122,14 @@ Daripada hanya membuat APK, saya bisa membuat workflow yang jauh lebih lengkap. 
 ✅ Memberi nama file berdasarkan versi aplikasi, misalnya BarokahMart-v1.0.0+1.apk.
 ✅ Otomatis membuat GitHub Release setiap kali Anda membuat tag versi (misalnya v1.0.0), sehingga APK bisa langsung diunduh dari halaman Releases.
 Workflow seperti ini lebih profesional dan cocok untuk pengembangan jangka panjang. Saya menyarankan kita langsung membuat versi tersebut daripada workflow yang paling sederhana, supaya nanti Anda tidak perlu mengubahnya lagi ketika aplikasi sudah siap dipublikasikan.
+
+Nanti kalau ada laptop baru, komputer rusak, atau ingin bekerja dari tempat lain, Anda tinggal:
+
+git clone
+flutter pub get
+git push
+
+dan semuanya langsung berjalan tanpa perlu mengatur ulang dari nol.
 
 =====================================================================================================================
 
