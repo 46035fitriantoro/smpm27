@@ -18,9 +18,16 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+    <!-- SECURITY: Disable screenshot & screen recording -->
+    <uses-permission android:name="android.permission.READ_FRAME_BUFFER" />
+
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
     <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
+
+    <!-- SECURITY: Disable multi-window / split screen -->
+    <uses-feature android:name="android.software.freeform_window_management" android:required="false" />
+    <uses-feature android:name="android.software.picture_in_picture" android:required="false" />
 
     <queries>
         <intent>
@@ -46,21 +53,24 @@
     </queries>
 
     <application
-        android:label="Barokah-Mart"
+        android:label="SMPM 27"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon"
         android:requestLegacyExternalStorage="true"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        android:supportsRtl="false">
         
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:taskAffinity=""
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:resizeableActivity="false"
+            android:lockTaskMode="if_whitelisted">
             
             <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"

@@ -52,3 +52,24 @@ Catatan penting: Gradle versi 8.14, Android Gradle Plugin 8.11.1, Kotlin 2.2.20,
 flutter clean
 flutter pub get
 flutter build apk --release --no-daemon
+
+
+Ringkasan security:
+
+Fitur	Implementasi
+Anti Screenshot/Screen Recording	FlutterWindowManager.FLAG_SECURE + permission READ_FRAME_BUFFER
+Anti Copy Paste	JavaScript block: copy, cut, paste, contextmenu, keyboard shortcuts (Ctrl+C/V/X/U/S), F12, PrintScreen
+Anti Text Selection	Disable selectstart, mousedown di non-input elements
+Anti Inspect Element	Override console.* methods, block DevTools
+Lock Home/Back	PopScope + dialog konfirmasi keluar
+Lock Task Mode	android:lockTaskMode="if_whitelisted" (bisa di-pin ke screen via Settings > Security)
+Anti Multi-Window	android:resizeableActivity="false"
+Anti App Switch	WidgetsBindingObserver detect lifecycle + warning overlay merah + counter pelanggaran + report ke server
+Screen Wake Lock	wakelock_plus — layar tetap menyala selama ujian
+Immersive Mode	SystemUiMode.immersiveSticky — sembunyikan status bar & nav bar
+Orientation Lock	Portrait only (tidak bisa landscape)
+Anti Zoom	supportZoom: false, builtInZoomControls: false
+Tambahan untuk admin:
+
+Lock Task Mode bisa diaktifkan via Settings > Security > Screen Pinning di HP siswa
+Pelanggaran app switch dihitung dan bisa di-report ke server via JavaScript window.onAppSwitch(count)

@@ -1,4 +1,4 @@
-package com.afdevapps.barokahmart
+package id.smpmuh27.app
 
 import io.flutter.embedding.android.FlutterActivity
 
