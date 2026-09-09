@@ -8,16 +8,10 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // === SECURITY: Disable screenshots & screen recording ===
-  try {
-    await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
-  } catch (_) {}
 
   // === SECURITY: Keep screen on during exam ===
   WakelockPlus.enable();
@@ -162,14 +156,7 @@ class _ExamWebViewState extends State<ExamWebView> with WidgetsBindingObserver {
   }
 
   // === SECURITY: Disable multi-window / split screen ===
-  Future<void> _disableMultiWindow() async {
-    if (Platform.isAndroid) {
-      try {
-        await FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_LAYOUT_NO_LIMITS);
-        await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_LAYOUT_IN_SCREEN);
-      } catch (_) {}
-    }
-  }
+  // Handled via AndroidManifest.xml: resizeableActivity="false"
 
   Future<void> _retryConnection() async {
     setState(() { _isRetrying = true; });
