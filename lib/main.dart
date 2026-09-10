@@ -129,8 +129,8 @@ class _ExamWebViewState extends State<ExamWebView> with WidgetsBindingObserver {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        title: const Text('Keluar Ujian?'),
-        content: const Text('Apakah anda yakin ingin keluar dari ujian?'),
+        title: const Text('Keluar Aplikasi?'),
+        content: const Text('Apakah anda yakin ingin keluar dari aplikasi?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
@@ -473,16 +473,10 @@ class _ExamWebViewState extends State<ExamWebView> with WidgetsBindingObserver {
                             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
                           ),
                           const SizedBox(height: 12),
-                          Text(
-                            "Anda terdeteksi meninggalkan aplikasi!\nPelanggaran ke-$_switchCount",
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(fontSize: 16, color: Colors.white),
-                          ),
-                          const SizedBox(height: 8),
                           const Text(
-                            "Jika terus berulang, ujian akan dibatalkan.",
+                            "Anda terdeteksi meninggalkan aplikasi! Ketika ujian berlangsung peringatan ini akan terdeteksi oleh Pengawas.",
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 14, color: Colors.white70),
+                            style: TextStyle(fontSize: 16, color: Colors.white),
                           ),
                         ],
                       ),
