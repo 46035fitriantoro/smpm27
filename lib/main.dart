@@ -72,7 +72,7 @@ class _ExamWebViewState extends State<ExamWebView> with WidgetsBindingObserver {
   bool _showSwitchWarning = false;
   int _switchCount = 0;
 
-  static const _targetUrl = "https://kkmp-harmul.id/smpm27/mobile-dashboard";
+  static const _targetUrl = "https://kkmp-harmul.id/smpm27/dashboard-mobile";
   Position? _lastPosition;
 
   // === SECURITY: Track app lifecycle ===
