@@ -13,21 +13,6 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // === SECURITY: Enable FLAG_SECURE (blocks screenshot & screen recording) ===
-  const securityChannel = MethodChannel('id.smpmuh27.app/security');
-  try {
-    await securityChannel.invokeMethod('enableSecureFlag');
-  } catch (e) {
-    debugPrint("Failed to enable secure flag: $e");
-  }
-
-  // === SECURITY: Start Lock Task Mode (prevents opening other apps) ===
-  try {
-    await securityChannel.invokeMethod('startLockTask');
-  } catch (e) {
-    debugPrint("Failed to start lock task: $e");
-  }
-
   // === SECURITY: Keep screen on during exam ===
   WakelockPlus.enable();
 
@@ -106,6 +91,24 @@ class _ExamWebViewState extends State<ExamWebView> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _initSecurity();
+  }
+
+  // === SECURITY: Initialize native security features after engine is ready ===
+  Future<void> _initSecurity() async {
+    // Enable FLAG_SECURE (blocks screenshot & screen recording)
+    try {
+      await _securityChannel.invokeMethod('enableSecureFlag');
+    } catch (e) {
+      debugPrint("Failed to enable secure flag: $e");
+    }
+
+    // Start Lock Task Mode (prevents opening other apps)
+    try {
+      await _securityChannel.invokeMethod('startLockTask');
+    } catch (e) {
+      debugPrint("Failed to start lock task: $e");
+    }
   }
 
   @override
@@ -295,8 +298,7 @@ class _ExamWebViewState extends State<ExamWebView> with WidgetsBindingObserver {
                   disableDefaultErrorPage: true,
                   geolocationEnabled: true,
 
-                  // === PERSISTENCE: Keep cookies/session alive ===
-                  persistentCookiesEnabled: true,
+                  // === PERSISTENCE: Cookies handled via CookieManager in main() ===
 
                   // === SECURITY: Anti copy paste ===
                   supportZoom: false,
