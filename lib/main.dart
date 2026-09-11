@@ -13,6 +13,21 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // === SECURITY: Enable FLAG_SECURE (blocks screenshot & screen recording) ===
+  const securityChannel = MethodChannel('id.smpmuh27.app/security');
+  try {
+    await securityChannel.invokeMethod('enableSecureFlag');
+  } catch (e) {
+    debugPrint("Failed to enable secure flag: $e");
+  }
+
+  // === SECURITY: Start Lock Task Mode (prevents opening other apps) ===
+  try {
+    await securityChannel.invokeMethod('startLockTask');
+  } catch (e) {
+    debugPrint("Failed to start lock task: $e");
+  }
+
   // === SECURITY: Keep screen on during exam ===
   WakelockPlus.enable();
 
@@ -21,6 +36,16 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+
+  // === PERSISTENCE: Enable cookies for session persistence ===
+  await CookieManager.instance().setCookie(
+    url: WebUri("https://kkmp-harmul.id"),
+    name: "smpm27_persistent",
+    value: "1",
+    expiresDate: DateTime.now().millisecondsSinceEpoch + (86400 * 30 * 1000),
+    isSecure: true,
+    isHttpOnly: false,
+  );
 
   // === SECURITY: Enter immersive sticky mode (hide status & nav bar) ===
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
@@ -73,6 +98,7 @@ class _ExamWebViewState extends State<ExamWebView> with WidgetsBindingObserver {
   int _switchCount = 0;
 
   static const _targetUrl = "https://kkmp-harmul.id/smpm27/dashboard-mobile";
+  static const _securityChannel = MethodChannel('id.smpmuh27.app/security');
   Position? _lastPosition;
 
   // === SECURITY: Track app lifecycle ===
@@ -95,27 +121,40 @@ class _ExamWebViewState extends State<ExamWebView> with WidgetsBindingObserver {
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.inactive ||
         state == AppLifecycleState.detached) {
-      // User left the app
+      // User left the app - increment switch count and report
       setState(() {
-        _showSwitchWarning = true;
         _switchCount++;
       });
 
       // Report to server via JavaScript
+      _reportAppSwitch();
+
+      // Show warning when user comes back
+      if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+        setState(() { _showSwitchWarning = true; });
+      }
+    }
+
+    if (state == AppLifecycleState.resumed) {
+      // User came back - show warning briefly then hide
+      Future.delayed(const Duration(seconds: 5), () {
+        if (mounted) {
+          setState(() { _showSwitchWarning = false; });
+        }
+      });
+    }
+  }
+
+  // === SECURITY: Report app switch to server ===
+  Future<void> _reportAppSwitch() async {
+    try {
       webViewController?.evaluateJavascript(source: """
         if (typeof window.onAppSwitch === 'function') {
           window.onAppSwitch($_switchCount);
         }
       """);
-    }
-
-    if (state == AppLifecycleState.resumed) {
-      // User came back - show warning briefly
-      Future.delayed(const Duration(seconds: 3), () {
-        if (mounted) {
-          setState(() { _showSwitchWarning = false; });
-        }
-      });
+    } catch (e) {
+      debugPrint("Failed to report app switch: $e");
     }
   }
 
@@ -137,7 +176,11 @@ class _ExamWebViewState extends State<ExamWebView> with WidgetsBindingObserver {
             child: const Text('Batal'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
+            onPressed: () async {
+              // Report exit attempt to server before closing
+              await _reportAppExit();
+              Navigator.of(ctx).pop(true);
+            },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Keluar'),
           ),
@@ -148,11 +191,31 @@ class _ExamWebViewState extends State<ExamWebView> with WidgetsBindingObserver {
     setState(() { _showExitDialog = false; });
 
     if (result == true) {
+      // === SECURITY: Disable lock task before exit ===
+      try {
+        await _securityChannel.invokeMethod('stopLockTask');
+      } catch (e) {
+        debugPrint("Failed to stop lock task: $e");
+      }
+
       WakelockPlus.disable();
       SystemNavigator.pop();
       return true;
     }
     return false;
+  }
+
+  // === SECURITY: Report app exit to server ===
+  Future<void> _reportAppExit() async {
+    try {
+      webViewController?.evaluateJavascript(source: """
+        if (typeof window.onAppExit === 'function') {
+          window.onAppExit();
+        }
+      """);
+    } catch (e) {
+      debugPrint("Failed to report app exit: $e");
+    }
   }
 
   // === SECURITY: Disable multi-window / split screen ===
@@ -231,6 +294,9 @@ class _ExamWebViewState extends State<ExamWebView> with WidgetsBindingObserver {
                   mediaPlaybackRequiresUserGesture: false,
                   disableDefaultErrorPage: true,
                   geolocationEnabled: true,
+
+                  // === PERSISTENCE: Keep cookies/session alive ===
+                  persistentCookiesEnabled: true,
 
                   // === SECURITY: Anti copy paste ===
                   supportZoom: false,
@@ -473,10 +539,16 @@ class _ExamWebViewState extends State<ExamWebView> with WidgetsBindingObserver {
                             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
                           ),
                           const SizedBox(height: 12),
-                          const Text(
+                          Text(
                             "Anda terdeteksi meninggalkan aplikasi! Ketika ujian berlangsung peringatan ini akan terdeteksi oleh Pengawas.",
                             textAlign: TextAlign.center,
                             style: TextStyle(fontSize: 16, color: Colors.white),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            "Percobaan ke-$_switchCount",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 14, color: Colors.white70),
                           ),
                         ],
                       ),
