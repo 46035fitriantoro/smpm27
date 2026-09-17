@@ -1,4 +1,4 @@
-name: Build Flutter APK
+name: Build Flutter APK & AAB
 
 on:
   push:
@@ -29,8 +29,17 @@ jobs:
       - name: Build APK
         run: flutter build apk --release
 
+      - name: Build AAB
+        run: flutter build appbundle --release
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: smpm27-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Upload AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: smpm27-aab
+          path: build/app/outputs/bundle/release/app-release.aab
