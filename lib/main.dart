@@ -10,6 +10,8 @@ import 'package:share_plus/share_plus.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
+const String kTargetUrl = "https://kkmp-harmul.id/smkm11/dashboard-mobile";
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -24,8 +26,8 @@ void main() async {
 
   // === PERSISTENCE: Enable cookies for session persistence ===
   await CookieManager.instance().setCookie(
-    url: WebUri("https://kkmp-harmul.id"),
-    name: "smpm27_persistent",
+    url: WebUri(Uri.parse(kTargetUrl).origin),
+    name: "smkm11_persistent",
     value: "1",
     expiresDate: DateTime.now().millisecondsSinceEpoch + (86400 * 30 * 1000),
     isSecure: true,
@@ -51,11 +53,11 @@ void main() async {
     debugPrint("Permission error: $e");
   }
 
-  runApp(const SMPM27App());
+  runApp(const SMKM11App());
 }
 
-class SMPM27App extends StatelessWidget {
-  const SMPM27App({super.key});
+class SMKM11App extends StatelessWidget {
+  const SMKM11App({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -81,8 +83,8 @@ class _ExamWebViewState extends State<ExamWebView> with WidgetsBindingObserver {
   bool _showExitDialog = false;
   int _switchCount = 0;
 
-  static const _targetUrl = "https://kkmp-harmul.id/smpm27/dashboard-mobile";
-  static const _securityChannel = MethodChannel('id.smpmuh27.app/security');
+  static const _targetUrl = kTargetUrl;
+  static const _securityChannel = MethodChannel('id.smkm11.app/security');
   Position? _lastPosition;
 
   // === SECURITY: Track app lifecycle ===
