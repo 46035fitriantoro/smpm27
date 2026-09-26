@@ -53,7 +53,7 @@
     </queries>
 
     <application
-        android:label="SMPM 27"
+        android:label="SDM 49"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon"
         android:requestLegacyExternalStorage="true"

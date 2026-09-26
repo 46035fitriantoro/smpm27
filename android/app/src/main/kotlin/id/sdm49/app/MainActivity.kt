@@ -1,4 +1,4 @@
-package id.smpmuh27.app
+package id.sdm49.app
 
 import android.app.ActivityManager
 import android.content.Context
@@ -12,7 +12,7 @@ import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
 
-    private val CHANNEL = "id.smpmuh27.app/security"
+    private val CHANNEL = "id.sdm49.app/security"
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)

@@ -1,8 +1,8 @@
-name: Build Flutter APK & AAB
+name: Build Flutter SDM49 APK & AAB
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ sdm49 ]
   workflow_dispatch:
 
 jobs:
@@ -32,14 +32,19 @@ jobs:
       - name: Build AAB
         run: flutter build appbundle --release
 
+      - name: Rename APK & AAB
+        run: |
+          cp build/app/outputs/flutter-apk/app-release.apk sdm49.apk
+          cp build/app/outputs/bundle/release/app-release.aab sdm49.aab
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: smpm27-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: sdm49-apk
+          path: sdm49.apk
 
       - name: Upload AAB
         uses: actions/upload-artifact@v4
         with:
-          name: smpm27-aab
-          path: build/app/outputs/bundle/release/app-release.aab
+          name: sdm49-aab
+          path: sdm49.aab
