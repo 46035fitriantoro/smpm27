@@ -79,7 +79,6 @@ class _ExamWebViewState extends State<ExamWebView> with WidgetsBindingObserver {
   bool _showErrorOverlay = false;
   bool _isRetrying = false;
   bool _showExitDialog = false;
-  bool _showSwitchWarning = false;
   int _switchCount = 0;
 
   static const _targetUrl = "https://kkmp-harmul.id/smpm27/dashboard-mobile";
@@ -131,20 +130,6 @@ class _ExamWebViewState extends State<ExamWebView> with WidgetsBindingObserver {
 
       // Report to server via JavaScript
       _reportAppSwitch();
-
-      // Show warning when user comes back
-      if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
-        setState(() { _showSwitchWarning = true; });
-      }
-    }
-
-    if (state == AppLifecycleState.resumed) {
-      // User came back - show warning briefly then hide
-      Future.delayed(const Duration(seconds: 5), () {
-        if (mounted) {
-          setState(() { _showSwitchWarning = false; });
-        }
-      });
     }
   }
 
@@ -524,42 +509,8 @@ class _ExamWebViewState extends State<ExamWebView> with WidgetsBindingObserver {
                 },
               ),
 
-              // === SECURITY: App switch warning overlay ===
-              if (_showSwitchWarning)
-                Container(
-                  color: Colors.red.withOpacity(0.9),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.warning_amber_rounded, size: 64, color: Colors.white),
-                          const SizedBox(height: 16),
-                          const Text(
-                            "PERINGATAN!",
-                            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            "Anda terdeteksi meninggalkan aplikasi! Ketika ujian berlangsung peringatan ini akan terdeteksi oleh Pengawas.",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 16, color: Colors.white),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            "Percobaan ke-$_switchCount",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 14, color: Colors.white70),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-
               // === ERROR OVERLAY ===
-              if (_showErrorOverlay && !_showSwitchWarning)
+              if (_showErrorOverlay)
                 Container(
                   color: Colors.white,
                   child: Center(
