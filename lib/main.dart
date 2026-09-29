@@ -10,29 +10,63 @@ import 'package:share_plus/share_plus.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
-const String kTargetUrl = "https://kkmp-harmul.id/sdm49/dashboard-mobile";
+// ==========================================================================
+//  KONFIGURASI SEKOLAH  --  SATU-SATUNYA BAGIAN YANG BOLEH BEDA
+// ==========================================================================
+//  ATURAN WAJIB (sama untuk flutter-smpm27, flutter-smkm11, flutter-sdm49):
+//  file ini harus IDENTIK di ketiga folder. Kalau ada perbaikan di satu
+//  sekolah, salin PERSIS ke dua yang lain supaya isinya tetap seragam.
+//
+//  Yang HANYA boleh berbeda adalah 3 nilai di bawah ini + nama class App
+//  (SDM49App / SMKM11App / SDM49App).
+//
+//  Jangan menambah fitur di satu folder saja -- selalu ketiganya.
+// ==========================================================================
+
+/// Alamat halaman dashboard-mobile sekolah ini.
+const String kUrlMobile = 'https://kkmp-harmul.id/sdm49/dashboard-mobile';
+
+/// Nama channel untuk kontrol keamanan native (FLAG_SECURE, Lock Task).
+/// Harus sama dengan applicationId di android/app/build.gradle.kts.
+const String kChannelKeamanan = 'id.sdm49.app/security';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // === SECURITY: Keep screen on during exam ===
+// === SECURITY: Keep screen on during exam ===
   WakelockPlus.enable();
 
-  // === SECURITY: Lock orientation to portrait ===
+// === SECURITY: Lock orientation to portrait ===
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
 
-  // === PERSISTENCE: Enable cookies for session persistence ===
-  await CookieManager.instance().setCookie(
-    url: WebUri(Uri.parse(kTargetUrl).origin),
-    name: "sdm49_persistent",
-    value: "1",
-    expiresDate: DateTime.now().millisecondsSinceEpoch + (86400 * 30 * 1000),
-    isSecure: true,
-    isHttpOnly: false,
-  );
+// ==========================================================================
+//  PERSISTENCE: Login permanen ("remember me")
+// ==========================================================================
+//  Alurnya:
+//   1. User login sekali di halaman /mobile-login.
+//   2. Server PHP mengembalikan COOKIE TOKEN berumur panjang (1 tahun).
+//      Yang disimpan di perangkat hanya token acak, BUKAN password.
+//   3. Begitu aplikasi ditutup lalu dibuka lagi, cookie itu masih ada,
+//      sehingga server langsung membuat session baru dan user masuk ke
+//      dashboard tanpa melihat halaman login lagi.
+//   4. Saat user logout, server menghapus cookie itu -- barulah halaman
+//      login muncul kembali.
+//
+//  CATATAN PENTING: tidak ada kode khusus yang perlu di sini.
+//  Android WebView sudah menerima cookie secara default, dan cookie yang
+//  punya atribut Expires (seperti token di atas) otomatis disimpan ke disk
+//  sehingga tetap terkirim saat aplikasi dibuka lagi.
+//
+//  Yang TIDAK boleh dilakukan di sini: membuat cookie palsu sendiri
+//  (mis. "smpm27_persistent") -- server tidak mengenalnya, jadi tidak
+//  ada efek apa pun selain memberi rasa aman yang keliru.
+//
+//  Yang tetap dijaga di bawah (initialSettings):
+//    thirdPartyCookiesEnabled : true  (memastikan cookie tidak diblokir)
+
 
   // === SECURITY: Enter immersive sticky mode (hide status & nav bar) ===
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
@@ -83,8 +117,8 @@ class _ExamWebViewState extends State<ExamWebView> with WidgetsBindingObserver {
   bool _showExitDialog = false;
   int _switchCount = 0;
 
-  static const _targetUrl = kTargetUrl;
-  static const _securityChannel = MethodChannel('id.sdm49.app/security');
+  static const _targetUrl = kUrlMobile;
+  static const _securityChannel = MethodChannel(kChannelKeamanan);
   Position? _lastPosition;
 
   // === SECURITY: Track app lifecycle ===
@@ -285,7 +319,10 @@ class _ExamWebViewState extends State<ExamWebView> with WidgetsBindingObserver {
                   disableDefaultErrorPage: true,
                   geolocationEnabled: true,
 
-                  // === PERSISTENCE: Cookies handled via CookieManager in main() ===
+                  // === PERSISTENCE: pastikan cookie tidak diblokir ===
+                  // Cookie token "remember me" disimpan server dengan
+                  // atribut Expires, jadi otomatis bertahan setelah app ditutup.
+                  thirdPartyCookiesEnabled: true,
 
                   // === SECURITY: Anti copy paste ===
                   supportZoom: false,
